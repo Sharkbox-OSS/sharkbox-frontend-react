@@ -1,0 +1,104 @@
+stages:
+  - lint
+  - test
+  - e2e
+  - build
+  - image
+
+variables:
+  NODE_ENV: production
+  PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+
+lint:
+  stage: lint
+  image: node:20-alpine
+  before_script:
+    - npm ci
+  script:
+    - npm run lint -- --max-warnings=0
+
+unit_tests:
+  stage: test
+  image: node:20-alpine
+  before_script:
+    - npm ci
+  script:
+    - npm run test --silent
+  artifacts:
+    when: always
+    reports:
+      junit: []
+
+e2e_tests:
+  stage: e2e
+  image: mcr.microsoft.com/playwright:v1.56.1-jammy
+  before_script:
+    - npm ci
+    - npx playwright install --with-deps
+  script:
+    - npm run test:e2e --silent
+  artifacts:
+    when: on_failure
+    paths:
+      - test-results/**
+
+build_app:
+  stage: build
+  image: node:20-alpine
+  before_script:
+    - npm ci
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - dist/**
+    expire_in: 1 week
+
+docker_image:
+  stage: image
+  image:
+    name: gcr.io/kaniko-project/executor:latest
+    entrypoint: [""]
+  variables:
+    IMAGE_TAG: $CI_COMMIT_SHA
+    DOCKER_CONFIG: /kaniko/.docker
+  before_script:
+    - mkdir -p /kaniko/.docker
+    - |
+      cat > /kaniko/.docker/config.json <<EOF
+      {
+        "auths": {
+          "${CI_REGISTRY}": {
+            "username": "${CI_REGISTRY_USER}",
+            "password": "${CI_REGISTRY_PASSWORD}"
+          }
+        }
+      }
+      EOF
+  script:
+    - >
+      /kaniko/executor
+      --context ${CI_PROJECT_DIR}
+      --dockerfile ${CI_PROJECT_DIR}/Dockerfile
+      --destination ${CI_REGISTRY_IMAGE}:${IMAGE_TAG}
+      --cache=true
+      --cache-repo ${CI_REGISTRY_IMAGE}/cache
+    - |
+      if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ]; then
+        /kaniko/executor \
+          --context ${CI_PROJECT_DIR} \
+          --dockerfile ${CI_PROJECT_DIR}/Dockerfile \
+          --destination ${CI_REGISTRY_IMAGE}:latest \
+          --cache=true \
+          --cache-repo ${CI_REGISTRY_IMAGE}/cache;
+      fi
+  needs:
+    - job: build_app
+

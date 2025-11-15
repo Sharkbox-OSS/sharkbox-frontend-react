@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply box-border;
+  }
+
+  :root {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Dark theme (default) */
+  :root[data-theme='dark'],
+  :root:not([data-theme]) {
+    --bg-primary: #030303;
+    --bg-secondary: #1a1a1b;
+    --bg-tertiary: #272729;
+    --border: #343536;
+    --text-primary: #d7dadc;
+    --text-secondary: #818384;
+    --accent-primary: #5db9ff;
+    --accent-secondary: #7193ff;
+    --accent-orange: #ff4500;
+    color-scheme: dark;
+    @apply text-text-primary bg-bg-primary;
+  }
+
+  /* Light theme */
+  :root[data-theme='light'] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f7f9fa;
+    --bg-tertiary: #edeff1;
+    --border: #e5e7e9;
+    --text-primary: #1c1c1c;
+    --text-secondary: #787c7e;
+    --accent-primary: #0088cc;
+    --accent-secondary: #0079d3;
+    --accent-orange: #ff4500;
+    color-scheme: light;
+    @apply text-text-primary bg-bg-primary;
+  }
+
+  body {
+    @apply m-0 min-w-[320px] min-h-screen;
+  }
+
+  #root {
+    @apply min-h-screen;
+  }
+
+  /* Global link styles */
+  a {
+    @apply text-accent-primary no-underline transition-colors;
+  }
+
+  a:hover {
+    @apply underline;
+  }
+}
+
+@layer components {
+  /* Shared button styles */
+  .btn-primary {
+    @apply px-4 py-2 rounded-md font-semibold text-white bg-accent-primary border border-accent-primary transition-opacity hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 rounded-md font-semibold text-text-primary bg-transparent border border-border transition-colors hover:bg-bg-tertiary;
+  }
+
+  .btn-link {
+    @apply px-4 py-2 rounded-md font-semibold text-accent-primary bg-transparent border border-accent-primary transition-colors;
+  }
+  
+  .btn-link:hover {
+    background-color: rgba(93, 185, 255, 0.1);
+  }
+  
+  [data-theme='light'] .btn-link:hover {
+    background-color: rgba(0, 136, 204, 0.1);
+  }
+
+  /* Form inputs */
+  .input-base {
+    @apply w-full px-3 py-2 rounded-md bg-bg-tertiary border border-border text-text-primary text-sm focus:outline-none focus:border-accent-primary transition-colors;
+    font-family: inherit;
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-bg-secondary border border-border rounded-lg overflow-hidden;
+  }
+
+  .card-hover {
+    @apply transition-colors hover:border-text-secondary;
+  }
+
+  /* Container */
+  .container-content {
+    @apply max-w-7xl mx-auto px-4 py-8;
+  }
+
+  .container-narrow {
+    @apply max-w-4xl mx-auto px-4;
+  }
+
+  /* Highlighted comment styles */
+  .comment-highlight {
+    @apply border border-accent-primary bg-bg-tertiary;
+  }
+  .comment-highlight-animate {
+    animation: commentFlash 1.2s ease-in-out 0s 2;
+  }
+}
+
+@keyframes commentFlash {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(93, 185, 255, 0.0); }
+  50% { box-shadow: 0 0 0 6px rgba(93, 185, 255, 0.15); }
+}
