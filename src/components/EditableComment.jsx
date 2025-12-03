@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import VoteButtons from './VoteButtons';
 import RelativeTime from './RelativeTime';
 import { useAuth } from '../hooks/useAuth';
@@ -18,7 +19,7 @@ const EditableComment = ({ comment, onVote, onEdit, onReply, onToggleCollapse, i
   const [copiedLink, setCopiedLink] = useState(false);
 
   const score = comment.upvotes - comment.downvotes;
-  const canEdit = user?.profile?.sub === comment.userId;
+  const canEdit = user?.profile?.preferred_username === comment.userId;
 
   // A comment is considered edited only if updatedAt is present and
   // strictly later than createdAt by a small threshold (to ignore
@@ -78,7 +79,7 @@ const EditableComment = ({ comment, onVote, onEdit, onReply, onToggleCollapse, i
   };
 
   return (
-    <div id={`comment-${comment.id}`} className={cn("flex gap-3 mb-2")}> 
+    <div id={`comment-${comment.id}`} className={cn("flex gap-3 mb-2")}>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 text-xs text-text-secondary mb-1 flex-wrap">
           {/* Collapse/expand toggle */}
@@ -89,7 +90,7 @@ const EditableComment = ({ comment, onVote, onEdit, onReply, onToggleCollapse, i
           >
             {isCollapsed ? '+' : '–'}
           </button>
-          <span className="text-accent-primary font-semibold hover:underline cursor-pointer">u/{comment.userId}</span>
+          <Link to={`/u/${comment.userId}`} className="text-accent-primary font-semibold hover:underline cursor-pointer no-underline">u/{comment.userId}</Link>
           {isOp && (
             <span className="px-1.5 py-0.5 rounded bg-accent-primary/20 text-accent-primary text-xs font-semibold">OP</span>
           )}

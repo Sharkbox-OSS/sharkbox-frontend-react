@@ -21,7 +21,7 @@ const EditThreadPage = () => {
   const updateMutation = useMutation({
     mutationFn: (threadData) => updateThread(id, threadData),
     onSuccess: () => {
-      navigate(`/thread/${id}`);
+      navigate(`/box/${thread.box.slug}/thread/${id}`);
     },
   });
 

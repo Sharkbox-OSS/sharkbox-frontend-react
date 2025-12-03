@@ -22,7 +22,7 @@ const CreateThreadPage = () => {
   const createMutation = useMutation({
     mutationFn: (threadData) => createThread(slug, threadData),
     onSuccess: (data) => {
-      navigate(`/thread/${data.id}`);
+      navigate(`/box/${slug}/thread/${data.id}`);
     },
   });
 

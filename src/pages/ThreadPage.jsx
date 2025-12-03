@@ -1,4 +1,4 @@
-import { useParams, Link, useLocation } from 'react-router-dom';
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useInfinitePagination } from '../hooks/useInfinitePagination';
@@ -79,9 +79,10 @@ const ThreadPage = () => {
       return next;
     });
   };
-  const { id } = useParams();
+  const { id, slug } = useParams();
   const { isAuthenticated, user, login } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const { data: thread, isLoading: threadLoading } = useQuery({
@@ -89,6 +90,13 @@ const ThreadPage = () => {
     queryFn: () => getThread(id),
     enabled: !!id,
   });
+
+  // Redirect to canonical URL if slug is missing
+  useEffect(() => {
+    if (thread && thread.box && !slug) {
+      navigate(`/box/${thread.box.slug}/thread/${thread.id}`, { replace: true });
+    }
+  }, [thread, slug, navigate]);
 
   // Comments: paginated (API page size 20). Use infinite query and auto-load while scrolling.
   const {
@@ -101,7 +109,7 @@ const ThreadPage = () => {
     sentinelRef: loadMoreRef,
   } = useInfinitePagination({
     queryKey: ['comments', id],
-    sort: ['createdAt,asc','id,asc'],
+    sort: ['createdAt,asc', 'id,asc'],
     enabled: !!id,
     fetchPage: (page, size, sort) => getComments(id, page, size, sort),
   });
@@ -164,8 +172,8 @@ const ThreadPage = () => {
   });
 
   const createCommentMutation = useMutation({
-    mutationFn: ({ threadId, content, parentId }) => createComment(threadId, { 
-      threadId: parseInt(threadId), 
+    mutationFn: ({ threadId, content, parentId }) => createComment(threadId, {
+      threadId: parseInt(threadId),
       content,
       ...(parentId && { parentId }),
     }),
@@ -257,21 +265,21 @@ const ThreadPage = () => {
         </div>
         <div className="flex-1 p-6">
           <div className="flex items-center gap-2 text-xs text-text-secondary mb-2 flex-wrap">
-            <Link 
-              to={`/b/${thread.box?.slug}`} 
+            <Link
+              to={`/b/${thread.box?.slug}`}
               className="text-accent-primary font-semibold hover:underline transition-colors"
             >
               b/{thread.box?.slug}
             </Link>
             <span className="text-text-secondary">•</span>
-            <span className="text-accent-primary hover:underline">u/{thread.userId}</span>
+            <Link to={`/u/${thread.userId}`} className="text-accent-primary hover:underline">u/{thread.userId}</Link>
             <span className="text-text-secondary">•</span>
             <RelativeTime dateString={thread.createdAt} className="text-text-secondary" />
-            {isAuthenticated && user?.profile?.sub === thread.userId && (
+            {isAuthenticated && user?.profile?.preferred_username === thread.userId && (
               <>
                 <span className="text-text-secondary">•</span>
-                <Link 
-                  to={`/thread/${id}/edit`} 
+                <Link
+                  to={`/box/${thread.box?.slug}/thread/${id}/edit`}
                   className="text-accent-primary hover:underline transition-colors"
                 >
                   Edit
@@ -294,9 +302,9 @@ const ThreadPage = () => {
             </a>
           )}
           {thread.type === 'IMAGE' && thread.content && (
-            <img 
-              src={thread.content} 
-              alt={thread.title} 
+            <img
+              src={thread.content}
+              alt={thread.title}
               className="max-w-full max-h-[600px] rounded-md mb-4"
             />
           )}
@@ -320,8 +328,8 @@ const ThreadPage = () => {
               required
               className="input-base min-h-[72px] resize-y"
             />
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="btn-primary self-end px-4 py-1.5 text-sm"
               disabled={createCommentMutation.isPending}
             >
@@ -340,8 +348,8 @@ const ThreadPage = () => {
               disabled
               className="input-base min-h-[56px] resize-none opacity-70"
             />
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="btn-primary px-4 py-1.5 text-sm"
               onClick={() => login(window.location.href)}
             >

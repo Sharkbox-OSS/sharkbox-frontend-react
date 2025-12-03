@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { formatRelativeTime } from '../utils/format';
 import VoteButtons from './VoteButtons';
 import { cn } from '../utils/tailwindUtils';
@@ -25,7 +26,7 @@ const Comment = ({ comment, onVote, level = 0 }) => {
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 text-xs text-text-secondary mb-1">
-          <span className="text-text-primary font-semibold">u/{comment.userId}</span>
+          <Link to={`/u/${comment.userId}`} className="text-text-primary font-semibold hover:underline no-underline">u/{comment.userId}</Link>
           <span>•</span>
           <span>{formatRelativeTime(comment.createdAt)}</span>
         </div>

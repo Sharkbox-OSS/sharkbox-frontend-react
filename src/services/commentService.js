@@ -1,4 +1,5 @@
 import apiClient from './api';
+import { normalizeToPage } from '../utils/apiParams';
 import { buildPageQuery, DEFAULT_PAGE_SIZE } from '../utils/apiParams';
 
 /**
@@ -12,7 +13,16 @@ import { buildPageQuery, DEFAULT_PAGE_SIZE } from '../utils/apiParams';
 export const getComments = async (threadId, page = 0, size = DEFAULT_PAGE_SIZE, sort = []) => {
   const qs = buildPageQuery(page, size, sort);
   const response = await apiClient.get(`/v1/comment/${threadId}?${qs}`);
-  return response.data;
+  return normalizeToPage(response.data, page, size);
+};
+
+/**
+ * Get comments by user with pagination
+ */
+export const getCommentsByUser = async (username, page = 0, size = DEFAULT_PAGE_SIZE, sort = []) => {
+  const qs = buildPageQuery(page, size, sort);
+  const response = await apiClient.get(`/v1/user/${username}/comments?${qs}`);
+  return normalizeToPage(response.data, page, size);
 };
 
 /**

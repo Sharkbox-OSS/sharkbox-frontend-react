@@ -22,18 +22,18 @@ const ThreadCard = ({ thread, onVote }) => {
       </div>
       <div className="flex-1 p-3">
         <div className="flex items-center gap-2 text-xs text-text-secondary mb-1 flex-wrap">
-          <Link 
-            to={`/b/${thread.box?.slug}`} 
+          <Link
+            to={`/b/${thread.box?.slug}`}
             className="text-text-primary font-semibold hover:text-accent-primary transition-colors"
           >
             b/{thread.box?.slug}
           </Link>
           <span>•</span>
-          <span>u/{thread.userId}</span>
+          <Link to={`/u/${thread.userId}`} className="text-text-secondary hover:text-accent-primary hover:underline transition-colors">u/{thread.userId}</Link>
           <span>•</span>
           <RelativeTime dateString={thread.createdAt} />
         </div>
-        <Link to={`/thread/${thread.id}`} className="block text-text-primary no-underline">
+        <Link to={`/box/${thread.box?.slug}/thread/${thread.id}`} className="block text-text-primary no-underline">
           <h3 className="my-2 text-text-primary text-lg font-semibold leading-tight hover:text-accent-primary transition-colors">
             {thread.title}
           </h3>
@@ -54,16 +54,16 @@ const ThreadCard = ({ thread, onVote }) => {
             </a>
           )}
           {thread.type === 'IMAGE' && thread.content && (
-            <img 
-              src={thread.content} 
-              alt={thread.title} 
+            <img
+              src={thread.content}
+              alt={thread.title}
               className="max-w-full max-h-96 mt-2 rounded-md"
             />
           )}
         </Link>
         <div className="flex justify-between items-center mt-3 pt-3 border-t border-border text-sm">
-          <Link 
-            to={`/thread/${thread.id}`} 
+          <Link
+            to={`/box/${thread.box?.slug}/thread/${thread.id}`}
             className="text-text-secondary hover:text-text-primary hover:underline transition-colors"
           >
             {formatNumber(thread.commentCount || 0)} comments

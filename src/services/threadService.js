@@ -16,6 +16,15 @@ export const getThreads = async (slug, page = 0, size = DEFAULT_PAGE_SIZE, sort 
 };
 
 /**
+ * Get threads by user with pagination
+ */
+export const getThreadsByUser = async (username, page = 0, size = DEFAULT_PAGE_SIZE, sort = []) => {
+  const qs = buildPageQuery(page, size, sort);
+  const response = await apiClient.get(`/v1/user/${username}/threads?${qs}`);
+  return response.data;
+};
+
+/**
  * Get a thread by ID
  */
 export const getThread = async (id) => {

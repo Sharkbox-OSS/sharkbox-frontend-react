@@ -33,21 +33,21 @@ const Navigation = () => {
 
           {/* Navigation Links */}
           <div className="hidden sm:flex items-center gap-6 flex-1">
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className="text-text-primary font-medium hover:text-accent-primary transition-colors text-sm no-underline"
             >
               Home
             </Link>
-            <Link 
-              to="/boxes" 
+            <Link
+              to="/boxes"
               className="text-text-primary font-medium hover:text-accent-primary transition-colors text-sm no-underline"
             >
               Boxes
             </Link>
             {isAuthenticated && (
-              <Link 
-                to="/create-box" 
+              <Link
+                to="/create-box"
                 className="text-text-primary font-medium hover:text-accent-primary transition-colors text-sm no-underline"
               >
                 Create Box
@@ -57,8 +57,8 @@ const Navigation = () => {
 
           {/* Auth Section */}
           <div className="flex items-center gap-3">
-            <button 
-              onClick={toggleTheme} 
+            <button
+              onClick={toggleTheme}
               className="p-2 rounded-md hover:bg-bg-tertiary transition-colors text-lg"
               aria-label="Toggle theme"
             >
@@ -66,9 +66,9 @@ const Navigation = () => {
             </button>
             {isAuthenticated ? (
               <div className="hidden sm:flex items-center gap-3">
-                <span className="text-text-secondary text-sm">
+                <Link to={`/u/${user?.profile?.preferred_username}`} className="text-text-secondary text-sm hover:text-accent-primary transition-colors no-underline">
                   {user?.profile?.name || user?.profile?.preferred_username || 'User'}
-                </span>
+                </Link>
                 <button onClick={handleLogout} className="btn-link text-sm py-1.5 px-3">
                   Logout
                 </button>
